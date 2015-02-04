@@ -1,3 +1,3 @@
-module HashInitializedStruct
-  VERSION = "0.0.1"
+class HashInitializedStruct
+  VERSION = "1.0.0"
 end
