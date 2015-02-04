@@ -1,4 +1,4 @@
-# Hash-Initialized Struct
+# Hash-Initialized Struct [![Build Status](https://travis-ci.org/damncabbage/hash_initialized_struct.svg)](https://travis-ci.org/damncabbage/hash_initialized_struct)
 
 Halfway between Struct and OpenStruct. (Or: Struct, except it takes a Hash on object initialization.)
 
