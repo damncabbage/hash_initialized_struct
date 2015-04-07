@@ -46,6 +46,12 @@ class HashInitializedStruct
           instance_variable_set("@#{attr}", value)
         end
       end
+
+      def to_h
+        # [k,k,...] => [[k,v], [k,v], ...] => {k => v, k => v, ...}
+        Hash[ self.class::STRUCT_ATTRS.map {|key| [key, self.public_send(key)]} ]
+      end
+      alias :to_hash :to_h
     end
   end
 end

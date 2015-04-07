@@ -35,6 +35,17 @@ describe "HashInitializedStruct" do
     }.to raise_error(ArgumentError, "Missing keys: :y")
   end
 
+  it "provides to_h" do
+    point = klass.new(x: 1, y: 2)
+    expect(point.to_h).to match({x: 1, y: 2})
+  end
+
+  it "provides to_hash for implicit conversions (Ruby 2+)" do
+    skip "Ignoring Ruby 1.9.x..." unless Kernel.respond_to?(:Hash)
+    point = klass.new(x: 1, y: 2)
+    expect(point.to_h).to eq Hash(point) # to_h == to_hash
+  end
+
   it "allows for overriding the constructor to add additional checks" do
     # Could do this with an anonymous class and define_method, but we're trying to emulate
     # how it might actually be used.
