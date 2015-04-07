@@ -72,11 +72,11 @@ describe "HashInitializedStruct" do
         def initialize(attrs)
           provided = attrs.keys
           raise_on_unrecognised_keys(provided, needed_keys)
-          set_attributes
+          set_attributes(attrs)
         end
       end
 
-      good = My3DPoint.new(x: 1, y: 2, z: 9) # Missing :t
+      good = MyOptionally4DPoint.new(x: 1, y: 2, z: 9) # Missing :t
       expect(good.x).to eq 1
     end
   end
