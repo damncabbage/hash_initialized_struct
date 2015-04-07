@@ -41,9 +41,14 @@ describe "HashInitializedStruct" do
   end
 
   it "provides to_hash for implicit conversions (Ruby 2+)" do
-    skip "Ignoring Ruby 1.9.x..." unless Kernel.respond_to?(:Hash)
     point = klass.new(x: 1, y: 2)
     expect(point.to_h).to eq Hash(point) # to_h == to_hash
+  end
+
+  it "casts attributes to Hash" do
+    point  = klass.new(x: 1, y: 2)
+    point2 = klass.new(point)
+    expect(point.to_h).to eq point2.to_h
   end
 
   describe "overriding the constructor" do
@@ -70,6 +75,7 @@ describe "HashInitializedStruct" do
     it "allows partial checks" do
       class MyOptionally4DPoint < HashInitializedStruct.new(:x, :y, :z, :t)
         def initialize(attrs)
+          attrs    = Hash(attrs)
           provided = attrs.keys
           raise_on_unrecognised_keys(provided, needed_keys)
           set_attributes(attrs)

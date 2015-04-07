@@ -34,6 +34,7 @@ class HashInitializedStruct
       end
 
       def initialize(attrs)
+        attrs    = Hash(attrs)
         provided = attrs.keys
         needed   = needed_keys
         self.raise_on_unrecognised_keys(provided, needed)
