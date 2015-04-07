@@ -35,16 +35,10 @@ class HashInitializedStruct
 
       def initialize(attrs)
         provided = attrs.keys
-        needed   = self.class::STRUCT_ATTRS
-        (provided - needed).tap do |unknown|
-          raise ArgumentError, "Unrecognised keys: #{unknown.map(&:inspect).join(', ')}" unless unknown.empty?
-        end
-        (needed - provided).tap do |missing|
-          raise ArgumentError, "Missing keys: #{missing.map(&:inspect).join(', ')}" unless missing.empty?
-        end
-        attrs.each do |attr,value|
-          instance_variable_set("@#{attr}", value)
-        end
+        needed   = needed_keys
+        self.raise_on_unrecognised_keys(provided, needed)
+        self.raise_on_missing_keys(provided, needed)
+        set_attributes(attrs)
       end
 
       def to_h
@@ -52,6 +46,30 @@ class HashInitializedStruct
         Hash[ self.class::STRUCT_ATTRS.map {|key| [key, self.public_send(key)]} ]
       end
       alias :to_hash :to_h
+
+      protected
+
+        def needed_keys
+          self.class::STRUCT_ATTRS
+        end
+
+        def raise_on_unrecognised_keys(provided, needed)
+          (provided - needed).tap do |unknown|
+            raise ArgumentError, "Unrecognised keys: #{unknown.map(&:inspect).join(', ')}" unless unknown.empty?
+          end
+        end
+
+        def raise_on_missing_keys(provided, needed)
+          (needed - provided).tap do |missing|
+            raise ArgumentError, "Missing keys: #{missing.map(&:inspect).join(', ')}" unless missing.empty?
+          end
+        end
+
+        def set_attributes(attrs)
+          attrs.each do |attr,value|
+            instance_variable_set("@#{attr}", value)
+          end
+        end
     end
   end
 end

@@ -46,23 +46,38 @@ describe "HashInitializedStruct" do
     expect(point.to_h).to eq Hash(point) # to_h == to_hash
   end
 
-  it "allows for overriding the constructor to add additional checks" do
-    # Could do this with an anonymous class and define_method, but we're trying to emulate
-    # how it might actually be used.
-    class My3DPoint < HashInitializedStruct.new(:x, :y, :z)
-      def initialize(attrs)
-        super
-        [x, y, z].each do |attr|
-          raise ArgumentError, "#{attr} must be a number" unless attr.kind_of?(Numeric)
+  describe "overriding the constructor" do
+    it "allows additional checks" do
+      # Could do this with an anonymous class and define_method, but we're trying to emulate
+      # how it might actually be used.
+      class My3DPoint < HashInitializedStruct.new(:x, :y, :z)
+        def initialize(attrs)
+          super
+          [x, y, z].each do |attr|
+            raise ArgumentError, "#{attr} must be a number" unless attr.kind_of?(Numeric)
+          end
         end
       end
+
+      good = My3DPoint.new(x: 1, y: 2, z: 9)
+      expect(good.x).to eq 1
+
+      expect {
+        My3DPoint.new(x: "1", y: nil, z: 9)
+      }.to raise_error(ArgumentError)
     end
 
-    good = My3DPoint.new(x: 1, y: 2, z: 9)
-    expect(good.x).to eq 1
+    it "allows partial checks" do
+      class MyOptionally4DPoint < HashInitializedStruct.new(:x, :y, :z, :t)
+        def initialize(attrs)
+          provided = attrs.keys
+          raise_on_unrecognised_keys(provided, needed_keys)
+          set_attributes
+        end
+      end
 
-    expect {
-      My3DPoint.new(x: "1", y: nil, z: 9)
-    }.to raise_error(ArgumentError)
+      good = My3DPoint.new(x: 1, y: 2, z: 9) # Missing :t
+      expect(good.x).to eq 1
+    end
   end
 end
